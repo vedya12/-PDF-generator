@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>कुंडली फॉर्म</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Martel&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Martel', serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #8B4513;
+            margin-bottom: 10px;
+        }
+        
+        .download-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: background 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: #1976D2;
+        }
+        
+        .clear-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0 20px 10px;
+            transition: background 0.3s;
+        }
+        
+        .clear-btn:hover {
+            background: #d32f2f;
+        }
+        
+        .template-box {
+            position: relative;
+            width: 100%;
+            height: 1120px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #8B4513;
+        }
+        
+        .template-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .template-background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .input-box {
+            position: absolute;
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 18px;
+            text-align: center;
+            font-family: 'Martel', serif;
+            outline: none;
+            min-width: 120px;
+            z-index: 2;
+        }
+        
+        .input-box:focus {
+            border-color: #2196F3;
+            background: #fff;
+        }
+        
+        .input-box.filled {
+            border-color: transparent !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        .select-input {
+            cursor: pointer;
+            background: white;
+            z-index: 2;
+        }
+        
+        .select-input.filled {
+            background: transparent !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        .graha-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+            z-index: 1000;
+            min-width: 350px;
+            max-width: 400px;
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-header h3 {
+            color: #8B4513;
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+        
+        .house-number-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2196F3;
+            margin: 10px 0;
+        }
+        
+        .rashi-input-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .rashi-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #5d4037;
+        }
+        
+        .rashi-number-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            font-family: 'Martel', serif;
+        }
+        
+        .rashi-number-input:focus {
+            border-color: #2196F3;
+            outline: none;
+        }
+        
+        .graha-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .graha-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .graha-option:hover {
+            background: #f0f0f0;
+            border-color: #4CAF50;
+        }
+        
+        .graha-option input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .graha-option label {
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .set-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .set-btn:hover {
+            background: #388E3C;
+        }
+        
+        .cancel-btn {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+        
+        .cancel-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        /* MODIFIED: House box styling - भाव text is only shown when empty */
+        .house-box {
+            position: absolute;
+            border: 2px dashed #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s;
+            padding: 5px;
+            text-align: center;
+            min-height: 60px;
+            z-index: 2;
+        }
+        
+        .house-box:hover {
+            border: 2px solid #2196F3;
+            background: rgba(33, 150, 243, 0.15);
+            transform: scale(1.05);
+        }
+        
+        .house-box.filled {
+            border: 2px solid transparent;
+            background: transparent;
+        }
+        
+        /* MODIFIED: House number - shown only when empty */
+        .house-number {
+            font-weight: bold;
+            color: #8B4513;
+            font-size: 12px;
+            margin-bottom: 3px;
+            display: block; /* Initially shown */
+        }
+        
+        .house-box.filled .house-number {
+            display: none !important; /* Hidden when filled */
+        }
+        
+        /* MODIFIED: Rashi display - shown only when filled */
+        .rashi-display {
+            font-size: 24px; /* Larger for better visibility */
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 3px;
+            display: none; /* Initially hidden */
+            min-height: 28px;
+        }
+        
+        .house-box.filled .rashi-display {
+            display: block !important; /* Shown when filled */
+        }
+        
+        /* MODIFIED: Grahas display - shown only when filled */
+        .grahas-display {
+            font-size: 14px; /* Slightly larger */
+            line-height: 1.4;
+            color: #2196F3;
+            font-weight: bold;
+            display: none; /* Initially hidden */
+        }
+        
+        .house-box.filled .grahas-display {
+            display: block !important; /* Shown when filled */
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+        
+        .instruction-text {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0 15px 0;
+            text-align: center;
+        }
+        
+        .note {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>कुंडली फॉर्म</h1>
+        <p>फक्त बॉक्स भरा आणि PDF डाउनलोड करा</p>
+        
+        <div class="button-container">
+            <button class="download-btn" onclick="downloadPDF()">
+                📄 PDF Download
+            </button>
+            <button class="clear-btn" onclick="clearAllData()">
+                🗑️ सर्व डेटा हटवा
+            </button>
+        </div>
+        
+        <div class="template-box" id="templateBox">
+            <!-- Template Background Image -->
+            <div class="template-background">
+                <img src="Editable A4 Janma Kundali.png" alt="Kundali Template" id="templateImage" 
+                     onerror="this.src='https://via.placeholder.com/800x1120/f0f0f0/8B4513?text=Kundali+Template'">
+            </div>
+            
+            <!-- Input Fields -->
+            <input type="text" class="input-box" placeholder="पूर्ण नाव" 
+                   style="left: 25%; top:19.5%; width: 54%; font-size: 18px;">
+            
+            <input type="text" class="input-box date-input" placeholder="जन्म तारीख" 
+                   style="position: absolute; left: 28%; top: 23.5%; width: 150px; font-size: 18px;">
+
+            <select class="input-box select-input" 
+                    style="position: absolute; left: 28%; top: 29.5%; width: 150px; font-size: 18px;">
+                <option value="">मास</option>
+                <option value="1">चैत्र</option>
+                <option value="2">वैशाख</option>
+                <option value="3">ज्येष्ठ</option>
+                <option value="4">आषाढ़</option>
+                <option value="5">श्रावण</option>
+                <option value="6">भाद्रपद</option>
+                <option value="7">अश्विन</option>
+                <option value="8">कार्तिक</option>
+                <option value="9">मार्गशीर्ष</option>
+                <option value="10">पौष</option>
+                <option value="11">माघ</option>
+                <option value="12">फाल्गुन</option>
+            </select>
+            
+            <select class="input-box select-input" 
+                    style="position: absolute; left: 60%; top: 29.5%; width: 75px; font-size: 18px;">
+                <option value="">पक्ष</option>
+                <option value="shukla">शुक्ल पक्ष</option>
+                <option value="krishna">कृष्ण पक्ष</option>
+            </select>
+
+            <select class="input-box select-input" 
+                    style="position: absolute; left: 70%; top: 29.5%; width: 75px; font-size: 18px;">
+                <option value="">तिथी</option>
+                <option value="1">प्रतिपदा</option>
+                <option value="2">द्वितीया</option>
+                <option value="3">तृतीया</option>
+                <option value="4">चतुर्थी</option>
+                <option value="5">पंचमी</option>
+                <option value="6">षष्ठी</option>
+                <option value="7">सप्तमी</option>
+                <option value="8">अष्टमी</option>
+                <option value="9">नवमी</option>
+                <option value="10">दशमी</option>
+                <option value="11">एकादशी</option>
+                <option value="12">द्वादशी</option>
+                <option value="13">त्रयोदशी</option>
+                <option value="14">चतुर्दशी</option>
+                <option value="15">पौर्णिमा</option>
+                <option value="16">अमावस्या</option>
+            </select>
+
+            <input type="text" class="input-box" placeholder="जन्म वेळ" 
+                   style="left: 28%; top:26.5%; width: 150px; font-size: 18px;">
+        
+            <select class="input-box select-input" 
+                    style="left: 60%; top: 23.5%; width: 150px; font-size: 18px;">
+                <option value="">वार निवडा</option>
+                <option value="1">सोमवार</option>
+                <option value="2">मंगळवार</option>
+                <option value="3">बुधवार</option>
+                <option value="4">गुरुवार</option>
+                <option value="5">शुक्रवार</option>
+                <option value="6">शनिवार</option>
+                <option value="7">रविवार</option>
+            </select>
+            
+            <select class="input-box select-input" style="left: 60%; top: 26.5%; width: 150px; font-size: 18px;">
+                <option value="">प्रहर निवडा</option>            
+                <option value="pahat">पहाट</option>
+                <option value="sakal">सकाळ</option>
+                <option value="dupar">दुपार</option>
+                <option value="sandhyakal">संध्याकाळ</option>
+                <option value="ratra">रात्र</option>
+                <option value="madhyaratra">मध्यरात्र</option>
+            </select>
+
+<select class="input-box select-input" 
+        style="position: absolute; left: 25%; top: 75.4%; width: 150px; font-size: 18px;">
+    <option value="">नाडी</option>
+    <option value="ady">आद्य नाडी</option>
+    <option value="madhya">मध्य नाडी</option>
+    <option value="antya">अंत्य नाडी</option>
+</select>
+
+            
+            <select class="input-box select-input" 
+                    style="position: absolute; left: 65%; top: 75%; width: 150px; font-size: 18px;">
+                <option value="">गण</option>
+                <option value="dev">देव गण</option>
+                <option value="manushya">मनुष्य गण</option>
+                <option value="rakshas">राक्षस गण</option>
+            </select>
+
+            <select class="input-box select-input" 
+                    style="left: 25%; top: 72.5%; width: 150px; font-size: 18px;">
+                <option value="">राशी निवडा</option>
+                <option>मेष</option>
+                <option>वृषभ</option>
+                <option>मिथुन</option>
+                <option>कर्क</option>
+                <option>सिंह</option>
+                <option>कन्या</option>
+                <option>तूळ</option>
+                <option>वृश्चिक</option>
+                <option>धनु</option>
+                <option>मकर</option>
+                <option>कुंभ</option>
+                <option>मीन</option>
+            </select>
+            
+            <select class="input-box select-input" 
+                    style="left: 25%; top: 67%; width: 150px; font-size: 18px;">
+                <option value="">नक्षत्र निवडा</option>
+                <option value="1">अश्विनी</option>
+                <option value="2">भरणी</option>
+                <option value="3">कृत्तिका</option>
+                <option value="4">रोहिणी</option>
+                <option value="5">मृगशीर्ष</option>
+                <option value="6">आर्द्रा</option>
+                <option value="7">पुनर्वसु</option>
+                <option value="8">पुष्य</option>
+                <option value="9">अश्लेषा</option>
+                <option value="10">मघा</option>
+                <option value="11">पूर्वा फाल्गुनी</option>
+                <option value="12">उत्तरा फाल्गुनी</option>
+                <option value="13">हस्त</option>
+                <option value="14">चित्रा</option>
+                <option value="15">स्वाति</option>
+                <option value="16">विशाखा</option>
+                <option value="17">अनुराधा</option>
+                <option value="18">ज्येष्ठा</option>
+                <option value="19">मूल</option>
+                <option value="20">पूर्वाषाढ़ा</option>
+                <option value="21">उत्तराषाढ़ा</option>
+                <option value="22">श्रवण</option>
+                <option value="23">धनिष्ठा</option>
+                <option value="24">शतभिषा</option>
+                <option value="25">पूर्वाभाद्रपद</option>
+                <option value="26">उत्तराभाद्रपद</option>
+                <option value="27">रेवती</option>
+            </select>
+            
+            <select class="input-box select-input" style="left: 65%; top: 67%; width: 150px; font-size: 18px;">
+                <option value="">चरण निवडा</option>
+                <option value="1">१</option>
+                <option value="2">२</option>
+                <option value="3">३</option>
+                <option value="4">४</option>
+            </select>
+
+            <input type="text" class="input-box" placeholder="जन्माक्षर" 
+                   style="left: 25%; top: 69.7%; width: 150px; font-size: 18px;">
+
+            <input type="text" class="input-box" placeholder="जन्म नाव" 
+                   style="left: 65%; top: 69.5%; width: 150px; font-size: 18px;">
+            
+            <select class="input-box select-input" 
+                    style="left: 65%; top: 72.3%; width: 150px; font-size: 18px;">
+                <option value="">राशिस्वामी निवडा</option>
+                <option>सूर्य</option>
+                <option>चंद्र</option>
+                <option>मंगळ</option>
+                <option>बुध</option>
+                <option>गुरु</option>
+                <option>शुक्र</option>
+                <option>शनि</option>
+            </select>
+
+            <!-- HOUSE BOXES for Graha Selection -->
+            <div class="house-box" data-house="1" style="left: 45%; top: 42%; width: 80px; height: 70px;">
+                <div class="house-number">भाव १</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="2" style="left: 30%; top: 38%; width: 80px; height: 10px;">
+                <div class="house-number">भाव २</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="3" style="left: 20%; top: 42%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ३</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="4" style="left: 30%; top: 47%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ४</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="5" style="left: 20%; top: 53%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ५</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="6" style="left: 30%; top: 55%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ६</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="7" style="left: 45%; top: 52.5%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ७</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="8" style="left: 60%; top: 55%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ८</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="9" style="left: 70%; top: 53%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ९</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="10" style="left: 60%; top: 47%; width: 80px; height: 70px;">
+                <div class="house-number">भाव १०</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="11" style="left: 70%; top: 42%; width: 80px; height: 70px;">
+                <div class="house-number">भाव ११</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+            <div class="house-box" data-house="12" style="left: 60%; top: 38%; width: 80px; height: 70px;">
+                <div class="house-number">भाव १२</div>
+                <div class="rashi-display"></div>
+                <div class="grahas-display"></div>
+            </div>
+            
+        </div>
+
+        <!-- Graha Selection Modal -->
+        <div class="overlay" id="overlay"></div>
+        <div class="graha-modal" id="grahaModal">
+            <div class="modal-header">
+                <h3>भाव सेटिंग</h3>
+                <div class="house-number-display" id="selectedHouse">भाव क्रमांक १</div>
+                <div class="instruction-text">राशी क्रमांक आणि ग्रह निवडा</div>
+            </div>
+            
+            <div class="rashi-input-group">
+                <label for="rashiNumber">राशी क्रमांक (१ ते १२)</label>
+                <input type="number" id="rashiNumber" class="rashi-number-input" 
+                       min="1" max="12" placeholder="उदा: ५">
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <div style="font-weight: bold; margin-bottom: 10px; color: #5d4037;">ग्रह निवडा:</div>
+                <div class="graha-options" id="grahaOptions">
+                    <!-- Options will be added by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" onclick="closeGrahaModal()">रद्द करा</button>
+                <button class="modal-btn set-btn" onclick="setGrahas()">सेट करा</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; color: #666; font-size: 18px;">
+            <p>1. भावांवर क्लिक करा → 2. राशी क्रमांक आणि ग्रह निवडा → 3. PDF Download करा</p>
+            <p class="note"><small>PDF मध्ये फक्त टेक्स्ट दिसेल (बॉक्स/बॉर्डर नाही)</small></p>
+            <p class="note"><small>Image: Editable_जन्म_कुंडली.png (same folder मध्ये ठेवा)</small></p>
+        </div>
+    </div>
+
+    <script>
+        // Graha data
+        const allGrahas = [
+            "सू", "चं", "मं", "बु", "गु", 
+            "शु", "श", "रा", "के"
+        ];
+        
+        // Store data for each house
+        const houseData = {};
+        let currentHouse = null;
+        
+        // Initialize house data
+        document.querySelectorAll('.house-box').forEach(house => {
+            const houseNum = house.dataset.house;
+            houseData[houseNum] = {
+                rashiNumber: "",
+                grahas: []
+            };
+            
+            // Add click event
+            house.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openGrahaModal(houseNum, house);
+            });
+        });
+        
+        // Open graha selection modal
+        function openGrahaModal(houseNum, houseElement) {
+            currentHouse = houseNum;
+            
+            // Show modal
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('grahaModal').style.display = 'block';
+            
+            // Update house number display
+            document.getElementById('selectedHouse').textContent = `भाव क्रमांक ${houseNum}`;
+            
+            // Get current data for this house
+            const currentData = houseData[houseNum] || { rashiNumber: "", grahas: [] };
+            
+            // Set rashi number input
+            document.getElementById('rashiNumber').value = currentData.rashiNumber;
+            
+            // Create checkboxes for grahas
+            const optionsDiv = document.getElementById('grahaOptions');
+            optionsDiv.innerHTML = '';
+            
+            allGrahas.forEach(graha => {
+                const isChecked = currentData.grahas.includes(graha);
+                
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'graha-option';
+                optionDiv.innerHTML = `
+                    <input type="checkbox" id="graha_${houseNum}_${graha}" value="${graha}" ${isChecked ? 'checked' : ''}>
+                    <label for="graha_${houseNum}_${graha}">${graha}</label>
+                `;
+                
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            // Focus on rashi input
+            setTimeout(() => {
+                document.getElementById('rashiNumber').focus();
+            }, 100);
+        }
+        
+        // Close modal
+        function closeGrahaModal() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('grahaModal').style.display = 'none';
+            currentHouse = null;
+        }
+        
+        // Set grahas for current house
+        function setGrahas() {
+            if (!currentHouse) return;
+            
+            // Get rashi number
+            const rashiNumber = document.getElementById('rashiNumber').value;
+            
+            // Get all checked grahas
+            const checkboxes = document.querySelectorAll('#grahaOptions input[type="checkbox"]:checked');
+            const selectedGrahas = Array.from(checkboxes).map(cb => cb.value);
+            
+            // Store data
+            houseData[currentHouse] = {
+                rashiNumber: rashiNumber,
+                grahas: selectedGrahas
+            };
+            
+            // Update house display
+            const houseElement = document.querySelector(`.house-box[data-house="${currentHouse}"]`);
+            const rashiDisplay = houseElement.querySelector('.rashi-display');
+            const grahasDisplay = houseElement.querySelector('.grahas-display');
+            
+            // Update rashi display
+            if (rashiNumber) {
+                rashiDisplay.textContent = rashiNumber;
+            } else {
+                rashiDisplay.textContent = '';
+            }
+            
+            // Update grahas display
+            if (selectedGrahas.length > 0) {
+                grahasDisplay.textContent = selectedGrahas.join("\n");
+            } else {
+                grahasDisplay.textContent = '';
+            }
+            
+            // Add or remove filled class
+            if (rashiNumber || selectedGrahas.length > 0) {
+                houseElement.classList.add('filled');
+            } else {
+                houseElement.classList.remove('filled');
+            }
+            
+            // Close modal
+            closeGrahaModal();
+            
+            // Save data
+            saveDataToLocalStorage();
+        }
+        
+        // Close modal when clicking overlay
+        document.getElementById('overlay').addEventListener('click', closeGrahaModal);
+        
+        // Apply filled class when input has value
+        document.querySelectorAll('.input-box').forEach(input => {
+            if (input.value) input.classList.add('filled');
+            
+            input.addEventListener('input', function() {
+                if (this.value) {
+                    this.classList.add('filled');
+                } else {
+                    this.classList.remove('filled');
+                }
+                saveDataToLocalStorage();
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.value) {
+                    this.classList.add('filled');
+                }
+            });
+            
+            input.addEventListener('focus', function() {
+                this.classList.remove('filled');
+            });
+            
+            if (input.tagName === 'SELECT') {
+                input.addEventListener('change', function() {
+                    if (this.value) {
+                        this.classList.add('filled');
+                    } else {
+                        this.classList.remove('filled');
+                    }
+                    saveDataToLocalStorage();
+                });
+            }
+        });
+        
+        // Wait for image to load
+        function waitForImageLoad() {
+            return new Promise((resolve) => {
+                const img = document.getElementById('templateImage');
+                if (img.complete && img.naturalWidth !== 0) {
+                    resolve();
+                } else {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                }
+            });
+        }
+        
+        // Save data to localStorage
+        function saveDataToLocalStorage() {
+            const formData = {};
+            document.querySelectorAll('.input-box').forEach(input => {
+                const name = input.placeholder || input.getAttribute('data-name') || `input_${Math.random()}`;
+                formData[name] = input.value;
+            });
+            
+            const saveData = {
+                houses: houseData,
+                form: formData,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('kundaliData', JSON.stringify(saveData));
+        }
+        
+        // Load data from localStorage
+        function loadDataFromLocalStorage() {
+            const savedData = localStorage.getItem('kundaliData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    
+                    // Load house data
+                    if (data.houses) {
+                        Object.keys(data.houses).forEach(houseNum => {
+                            if (houseData[houseNum]) {
+                                houseData[houseNum] = data.houses[houseNum];
+                                
+                                // Update display
+                                const houseElement = document.querySelector(`.house-box[data-house="${houseNum}"]`);
+                                if (houseElement) {
+                                    const rashiDisplay = houseElement.querySelector('.rashi-display');
+                                    const grahasDisplay = houseElement.querySelector('.grahas-display');
+                                    const dataForHouse = data.houses[houseNum];
+                                    
+                                    if (dataForHouse.rashiNumber) {
+                                        rashiDisplay.textContent = dataForHouse.rashiNumber;
+                                    }
+                                    
+                                    if (dataForHouse.grahas && dataForHouse.grahas.length > 0) {
+                                        grahasDisplay.textContent = dataForHouse.grahas.join("\n");
+                                    }
+                                    
+                                    // Add filled class if data exists
+                                    if (dataForHouse.rashiNumber || (dataForHouse.grahas && dataForHouse.grahas.length > 0)) {
+                                        houseElement.classList.add('filled');
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Load form data
+                    if (data.form) {
+                        // We'll try to match by placeholder text since we don't have unique names
+                        document.querySelectorAll('.input-box').forEach(input => {
+                            const placeholder = input.placeholder;
+                            if (placeholder && data.form[placeholder]) {
+                                input.value = data.form[placeholder];
+                                if (input.value) {
+                                    input.classList.add('filled');
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.log('Error loading saved data:', e);
+                }
+            }
+        }
+        
+        // Clear all data
+        function clearAllData() {
+            if (confirm('तुम्हाला सर्व डेटा हटवायचा आहे का?\nही क्रिया पूर्ववत करता येणार नाही.')) {
+                // Clear inputs
+                document.querySelectorAll('.input-box').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                });
+                
+                // Clear houses
+                Object.keys(houseData).forEach(houseNum => {
+                    houseData[houseNum] = { rashiNumber: "", grahas: [] };
+                    const houseElement = document.querySelector(`.house-box[data-house="${houseNum}"]`);
+                    if (houseElement) {
+                        houseElement.querySelector('.rashi-display').textContent = '';
+                        houseElement.querySelector('.grahas-display').textContent = '';
+                        houseElement.classList.remove('filled');
+                    }
+                });
+                
+                // Clear localStorage
+                localStorage.removeItem('kundaliData');
+                alert('सर्व डेटा हटवला गेला');
+            }
+        }
+        
+        // PDF download function
+async function downloadPDF() {
+    const button = document.querySelector('.download-btn');
+    const originalText = button.innerHTML;
+    button.innerHTML = 'PDF तयार होत आहे...';
+    button.disabled = true;
+
+    try {
+        await waitForImageLoad();
+
+        // hide borders
+        document.querySelectorAll('.input-box').forEach(el => {
+            el.classList.add('filled');
+            el.style.padding = '2px';
+            if (el.tagName === 'SELECT') el.style.backgroundImage = 'none';
+        });
+        document.querySelectorAll('.house-box').forEach(el => el.classList.add('filled'));
+        button.style.display = 'none';
+
+        const template = document.getElementById('templateBox');
+
+        const canvas = await html2canvas(template, {
+            scale: 2,              // IMPORTANT: don't use 3 for print
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        // A4 size in mm
+        const A4_WIDTH_MM = 210;
+        const A4_HEIGHT_MM = 297;
+
+        // px → mm conversion (96 DPI browser → 25.4 mm)
+        const pxToMm = px => px * 25.4 / 96;
+
+        const imgWidthMm = pxToMm(canvas.width);
+        const imgHeightMm = pxToMm(canvas.height);
+
+        const pdf = new jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // SCALE image to EXACT A4
+        pdf.addImage(
+            imgData,
+            'PNG',
+            0,
+            0,
+            A4_WIDTH_MM,
+            A4_HEIGHT_MM
+        );
+
+        pdf.save('kundali_A4.pdf');
+
+    } catch (e) {
+        alert('PDF Error: ' + e.message);
+    } finally {
+        button.style.display = 'block';
+        button.innerHTML = originalText;
+        button.disabled = false;
+
+        document.querySelectorAll('.input-box').forEach(el => {
+            el.style.padding = '';
+            if (el.tagName === 'SELECT') el.style.backgroundImage = '';
+        });
+    }
+}
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved data
+            loadDataFromLocalStorage();
+            
+            // Focus on first input
+            const firstInput = document.querySelector('.input-box');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            
+            // Auto-save data every 5 seconds
+            setInterval(saveDataToLocalStorage, 5000);
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S to save
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveDataToLocalStorage();
+                alert('डेटा सेव्ह केला गेला');
+            }
+            
+            // Ctrl+D to download PDF
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                downloadPDF();
+            }
+            
+            // Escape to close modal
+            if (e.key === 'Escape') {
+                closeGrahaModal();
+            }
+        });
+    </script>
+</body>
+</html>
